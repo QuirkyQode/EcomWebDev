@@ -1,11 +1,29 @@
-const express = require('express')
-const app = express()
-const port = 3000
+import mongoose from 'mongoose'
+import app from './app.js'
+import config from "./config/index"
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+//create a fn
+// run a fn
+// (async () => {})()
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+(async () => {
+    try {
+        await mongoose.connect(config.MONGODB_URL)
+        console.log("DB CONNECTED");
+
+        app.on('error', (err) => {
+            console.log("ERROR: ", err);
+            throw err;
+        })
+
+        const onListening = () => {
+            console.log(`Listening on ${config.PORT}`);
+        }
+
+        app.listen(config.PORT, onListening)
+
+    } catch (err) {
+        console.log("ERROR ", err);
+        throw err
+    }
+})()
